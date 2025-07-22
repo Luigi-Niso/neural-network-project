@@ -10,9 +10,9 @@ TEST_BIN_DIR = test/bin
 UNITY_DIR = ../unity/src
 
 # File sorgente e eseguibili
-MAIN_SRC = $(SRC_DIR)/main.c
+MAIN_SRC = $(SRC_DIR)/main.c $(SRC_DIR)/neural.c
 MAIN_TARGET = $(BIN_DIR)/main
-TEST_SRC = $(TEST_SRC_DIR)/test.c
+TEST_SRC = $(TEST_SRC_DIR)/test.c $(SRC_DIR)/neural.c
 TEST_TARGET = $(TEST_BIN_DIR)/test
 UNITY_SRC = $(UNITY_DIR)/unity.c
 
@@ -41,6 +41,7 @@ run: $(MAIN_TARGET)
 
 # Esegue i test
 test: $(TEST_TARGET)
+	clear
 	./$(TEST_TARGET)
 
 # Pulisce i file generati
