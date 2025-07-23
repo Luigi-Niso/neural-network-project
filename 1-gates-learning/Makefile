@@ -25,7 +25,7 @@ $(MAIN_TARGET): $(MAIN_SRC) | $(BIN_DIR)
 
 # Compila i test (con Unity)
 $(TEST_TARGET): $(TEST_SRC) $(UNITY_SRC) | $(TEST_BIN_DIR)
-	$(CC) $(CFLAGS) -I$(UNITY_DIR) -o $(TEST_TARGET) $(TEST_SRC) $(UNITY_SRC)
+	$(CC) $(CFLAGS) -I$(UNITY_DIR) -I$(SRC_DIR) -o $(TEST_TARGET) $(TEST_SRC) $(UNITY_SRC)
 
 # Crea le directory se non esistono
 $(BIN_DIR):
