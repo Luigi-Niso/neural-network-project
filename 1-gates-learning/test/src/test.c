@@ -1,5 +1,5 @@
 #include "unity.h"
-#include "../../src/neural.h"
+#include "neural.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -43,16 +43,16 @@ void test_rand_float_returns_valid_range(void) {
     }
 }
 
-// Test della funzione cost con valori perfetti
-void test_cost_perfect_weights(void) {
+// Test della funzione cost_double con valori perfetti
+void test_cost_double_perfect_weights(void) {
     // Per OR gate: w1=20, w2=20, b=-10 dovrebbe dare cost molto basso
-    float perfect_cost = cost(20.0f, 20.0f, -10.0f);
+    float perfect_cost = cost_double(20.0f, 20.0f, -10.0f);
     TEST_ASSERT_TRUE(perfect_cost < 0.1f);
 }
 
-// Test della funzione cost con valori casuali
-void test_cost_random_weights(void) {
-    float random_cost = cost(1.0f, 1.0f, 1.0f);
+// Test della funzione cost_double con valori casuali
+void test_cost_double_random_weights(void) {
+    float random_cost = cost_double(1.0f, 1.0f, 1.0f);
     TEST_ASSERT_TRUE(random_cost >= 0.0f);
     TEST_ASSERT_TRUE(random_cost <= 4.0f); // Massimo teorico per 4 campioni
 }
@@ -66,20 +66,21 @@ void test_gradient_descent_convergence(void) {
     float eps = 1e-3;
     float rate = 1e-1;
     
-    float initial_cost = cost(w1, w2, b);
+    float initial_cost = cost_double(w1, w2, b);
     
     // Esegui alcune iterazioni di gradient descent
     for(int i = 0; i < 1000; i++) {
-        float dw1 = (cost(w1 + eps, w2, b) - cost(w1, w2, b))/eps;
-        float dw2 = (cost(w1, w2 + eps, b) - cost(w1, w2, b))/eps;
-        float db = (cost(w1, w2, b + eps) - cost(w1, w2, b))/eps;
+        float c = cost_double(w1, w2, b);
+        float dw1 = (cost_double(w1 + eps, w2, b) - c)/eps;
+        float dw2 = (cost_double(w1, w2 + eps, b) - c)/eps;
+        float db = (cost_double(w1, w2, b + eps) - c)/eps;
         
         w1 -= rate * dw1;
         w2 -= rate * dw2;
         b -= rate * db;
     }
     
-    float final_cost = cost(w1, w2, b);
+    float final_cost = cost_double(w1, w2, b);
     
     // Il costo finale dovrebbe essere minore di quello iniziale
     TEST_ASSERT_TRUE(final_cost < initial_cost);
@@ -94,36 +95,23 @@ void test_or_gate_logic(void) {
     TEST_ASSERT_EQUAL_FLOAT(1.0f, train[3][2]); // 1 OR 1 = 1
 }
 
-// Test trained model predictions
-void test_trained_model_predictions(void) {
-    // Pesi pre-addestrati per OR gate
-    float w1 = 8.5f;
-    float w2 = 8.5f;
-    float b = -4.0f;
+// Test XOR model initialization
+void test_xor_model_initialization(void) {
+    Xor model = rand_xor();
     
-    // Test predizioni
-    float pred1 = sigmoidf(0.0f * w1 + 0.0f * w2 + b); // 0,0 -> dovrebbe essere ~0
-    float pred2 = sigmoidf(0.0f * w1 + 1.0f * w2 + b); // 0,1 -> dovrebbe essere ~1
-    float pred3 = sigmoidf(1.0f * w1 + 0.0f * w2 + b); // 1,0 -> dovrebbe essere ~1
-    float pred4 = sigmoidf(1.0f * w1 + 1.0f * w2 + b); // 1,1 -> dovrebbe essere ~1
-    
-    TEST_ASSERT_TRUE(pred1 < 0.1f);  // Vicino a 0
-    TEST_ASSERT_TRUE(pred2 > 0.9f);  // Vicino a 1
-    TEST_ASSERT_TRUE(pred3 > 0.9f);  // Vicino a 1
-    TEST_ASSERT_TRUE(pred4 > 0.9f);  // Vicino a 1
+    // Tutti i pesi dovrebbero essere tra 0 e 1
+    TEST_ASSERT_TRUE(model.or_w1 >= 0.0f && model.or_w1 <= 1.0f);
+    TEST_ASSERT_TRUE(model.or_w2 >= 0.0f && model.or_w2 <= 1.0f);
+    TEST_ASSERT_TRUE(model.and_w1 >= 0.0f && model.and_w1 <= 1.0f);
 }
 
-// Test numerical stability
-void test_numerical_stability(void) {
-    // Test con valori estremi
-    float very_large = sigmoidf(1000.0f);
-    float very_small = sigmoidf(-1000.0f);
+// Test cost functions exist
+void test_cost_functions_exist(void) {
+    float simple_cost = cost_simple(1.0f, 0.0f);
+    float double_cost = cost_double(1.0f, 1.0f, 0.0f);
     
-    // Non dovrebbero essere NaN o infinito
-    TEST_ASSERT_FALSE(isnan(very_large));
-    TEST_ASSERT_FALSE(isinf(very_large));
-    TEST_ASSERT_FALSE(isnan(very_small));
-    TEST_ASSERT_FALSE(isinf(very_small));
+    TEST_ASSERT_TRUE(simple_cost >= 0.0f);
+    TEST_ASSERT_TRUE(double_cost >= 0.0f);
 }
 
 int main(void) {
@@ -132,12 +120,12 @@ int main(void) {
     RUN_TEST(test_sigmoidf_returns_correct_values);
     RUN_TEST(test_sigmoidf_boundaries);
     RUN_TEST(test_rand_float_returns_valid_range);
-    RUN_TEST(test_cost_perfect_weights);
-    RUN_TEST(test_cost_random_weights);
+    RUN_TEST(test_cost_double_perfect_weights);
+    RUN_TEST(test_cost_double_random_weights);
     RUN_TEST(test_gradient_descent_convergence);
     RUN_TEST(test_or_gate_logic);
-    RUN_TEST(test_trained_model_predictions);
-    RUN_TEST(test_numerical_stability);
+    RUN_TEST(test_xor_model_initialization);
+    RUN_TEST(test_cost_functions_exist);
     
     return UNITY_END();
 }

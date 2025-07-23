@@ -53,3 +53,4 @@ clean:
 rebuild: clean all
 
 .PHONY: all run test clean rebuild
+.PHONY: all run test clean rebuild
