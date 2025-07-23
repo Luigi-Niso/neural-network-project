@@ -1,5 +1,5 @@
 #include "unity.h"
-#include "neural.h"
+#include "lib/neural.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>

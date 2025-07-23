@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
-#include "neural.h"
+#include "../lib/neural.h"
 
 // Dataset XOR locale (sovrascrive quello globale)
 static float xor_train[][3] = {
